@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@loadable/component": "^5.15.2",
+    "@types/react-router": "^5.1.19",
+    "@types/react-router-dom": "^5.3.3",
+    "react-router": "^6.4.3",
+    "react-router-dom": "^6.4.3"
+  },
+  "devDependencies": {
+    "@types/loadable__component": "^5.13.4",
+    "webpack-cli": "^4.10.0"
+  }
+}
