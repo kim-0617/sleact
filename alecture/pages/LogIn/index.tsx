@@ -1,7 +1,7 @@
 import useInput from '@hooks/useInput';
 import React, { useCallback, useState } from 'react';
 import axios from 'axios';
-import useSWR, { useSWRConfig } from 'swr';
+import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import { Navigate, Link } from "react-router-dom";
 import { Form, Error, Label, Input, LinkContainer, Button, Header } from './styles';
@@ -32,6 +32,10 @@ const LogIn = () => {
                 setLogInError(error.response?.data?.statusCode === 401);
             });
     }, [email, password]);
+
+    if(data === undefined) {
+        return <div>로딩중 .....</div>
+    }
 
     if (data) {
         return <Navigate replace to="/workspace/channel" />
