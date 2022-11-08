@@ -26,6 +26,8 @@ const LogIn = () => {
                 },
             )
             .then((response) => {
+                // mutate : 서버에 요청을 보내지 않고 response.data를 가져옴
+                // 두번째인자 : shouldrevalidate (나중에 요청을 확인차 보낼지 말지)
                 mutate(response.data, false);
             })
             .catch((error) => {
@@ -33,7 +35,7 @@ const LogIn = () => {
             });
     }, [email, password]);
 
-    if(data === undefined) {
+    if (data === undefined) {
         return <div>로딩중 .....</div>
     }
 

@@ -1,12 +1,14 @@
 import React from 'react';
 import ReactDom from 'react-dom/client';
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 
 import App from '@layouts/App';
 
 ReactDom.createRoot(document.querySelector('#app')!)
   .render(
+    <BrowserRouter>
       <App />
+    </BrowserRouter>
   );
 
 // pages - 서비스 페이지
