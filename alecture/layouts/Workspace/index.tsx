@@ -1,11 +1,12 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import useSWR from 'swr';
 import axios from 'axios';
 import fetcher from '@utils/fetcher';
 import gravatar from 'gravatar';
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
-import { Channels, Chats, Header, MenuScroll, ProfileImg, RightMenu, WorkspaceName, Workspaces, WorkspaceWrapper } from './styles';
+import { Channels, Chats, Header, LogOutButton, MenuScroll, ProfileImg, ProfileModal, RightMenu, WorkspaceName, Workspaces, WorkspaceWrapper } from './styles';
 import loadable from '@loadable/component';
+import Menu from '@components/Menu';
 
 const Channel = loadable(() => import('@pages/Channel'));
 const DirectMessage = loadable(() => import('@pages/DirectMessage'));
@@ -15,7 +16,7 @@ interface ChildProp {
 }
 
 const WorkSpace = (props: ChildProp) => {
-    console.log("workspace rendering")
+    const [showUserMenu, setShowUserMenu] = useState(false);
     const { data, error, mutate }: any = useSWR('http://localhost:3095/api/users', fetcher);
     const onLogout = useCallback(() => {
         axios
@@ -27,19 +28,37 @@ const WorkSpace = (props: ChildProp) => {
             });
     }, []);
 
+    const onClickUserProfile = useCallback(() => {
+        setShowUserMenu((prev) => !prev);
+    }, []);
+
     if (!data) {
         return <Navigate replace to="/login" />
     }
+
     return (
         <>
             <Header>
                 <RightMenu>
-                    <span>
-                        {data && <ProfileImg src={gravatar.url(data.email, { s: "28px", d: "retro" })} alt="" />}
+                    <span onClick={onClickUserProfile}>
+                        {data && <ProfileImg src={gravatar.url(data.email, { s: "28px", d: "retro" })} alt={data.email} />}
+                        {showUserMenu &&
+                            (<Menu
+                                style={{ right: '0px', top: '38px' }}
+                                show={showUserMenu}
+                                onCloseModal={onClickUserProfile}>
+                                <ProfileModal>
+                                    <img src={gravatar.url(data.email, { s: "36px", d: "retro" })} alt={data.email} />
+                                    <div>
+                                        <span id="profile-name">{data.nickname}</span>
+                                        <span id="profile-active">Active</span>
+                                    </div>
+                                </ProfileModal>
+                                <LogOutButton onClick={onLogout}>로그아웃</LogOutButton>
+                            </Menu>)}
                     </span>
                 </RightMenu>
             </Header>
-            <button onClick={onLogout}>logout</button>
             <WorkspaceWrapper>
                 <Workspaces>test</Workspaces>
                 <Channels>
