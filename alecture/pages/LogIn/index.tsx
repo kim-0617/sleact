@@ -5,10 +5,11 @@ import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import { Navigate, Link } from "react-router-dom";
 import { Form, Error, Label, Input, LinkContainer, Button, Header } from './styles';
+import { IUser } from "@typings/db";
 
 const LogIn = () => {
     // data가 존재하지 않으면 로딩중
-    const { data, error, mutate } = useSWR('http://localhost:3095/api/users', fetcher);
+    const { data, error, mutate } = useSWR<IUser>('http://localhost:3095/api/users', fetcher);
 
     const [email, onChangeEmail] = useInput('');
     const [password, onChangePassword] = useInput('');
@@ -40,7 +41,7 @@ const LogIn = () => {
     }
 
     if (data) {
-        return <Navigate replace to="/workspace/channel" />
+        return <Navigate replace to="/workspace/sleact/channel/일반" />
     }
 
     return (

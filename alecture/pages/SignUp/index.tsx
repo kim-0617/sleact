@@ -4,10 +4,11 @@ import axios from 'axios';
 import useSWR from 'swr';
 import { Link, Navigate } from 'react-router-dom';
 import fetcher from '@utils/fetcher';
+import { IUser } from "@typings/db";
 import { Success, Form, Error, Label, Input, LinkContainer, Button, Header } from './styles';
 
 const SignUp = () => {
-    const { data, error, mutate } = useSWR('http://localhost:3095/api/users', fetcher);
+    const { data, error, mutate } = useSWR<IUser>('http://localhost:3095/api/users', fetcher);
 
     const [email, onChangeEmail] = useInput('');
     const [nickname, onChangeNickname] = useInput('');
@@ -18,12 +19,12 @@ const SignUp = () => {
     const [signUpError, setSignUpError] = useState('');
     const [signUpSuccess, setSignUpSuccess] = useState(false);
 
-    
+
     const onChangePassword = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
         setMisMatchError(e.target.value !== passwordCheck);
     }, [password]);
-    
+
     const onChangePasswordCheck = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setPasswordCheck(e.target.value);
         setMisMatchError(e.target.value !== password);
@@ -33,7 +34,6 @@ const SignUp = () => {
         e.preventDefault();
         console.log(email, nickname, password, passwordCheck);
         if (!mismatchError && nickname) {
-            console.log("회원가입 하러가기!");
             setSignUpError('') // 비동기 요청전에 초기화 한번 해주기
             setSignUpSuccess(false);
             axios.post('http://localhost:3095/api/users', {
@@ -41,23 +41,23 @@ const SignUp = () => {
                 nickname,
                 password,
             })
-            .then((response) => {
-                console.log(response);
-                setSignUpSuccess(true);
-            })
-            .catch((err) => {
-                console.log(err.response);
-                setSignUpError(err.response.data);
-            });
+                .then((response) => {
+                    console.log(response);
+                    setSignUpSuccess(true);
+                })
+                .catch((err) => {
+                    console.log(err.response);
+                    setSignUpError(err.response.data);
+                });
         }
     }, [email, nickname, password, passwordCheck]);
 
-    if(data === undefined) { // data가 false인 경우를 피하기 위해서 !data 하지 않음
+    if (data === undefined) { // data가 false인 경우를 피하기 위해서 !data 하지 않음
         return <div>로딩중 .....</div>
     }
 
     if (data) {
-        return <Navigate replace to="/workspace/channel" />
+        return <Navigate replace to="/workspace/sleact/channel/일반" />
     }
 
     return (

@@ -13,6 +13,7 @@ const Menu = (props: ChildProp) => {
     const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
     }
+    if (props.show == false) return null;
 
     return (
         <CreateMenu onClick={props.onCloseModal}>
