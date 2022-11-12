@@ -9,7 +9,7 @@ import { IUser } from "@typings/db";
 
 const LogIn = () => {
     // data가 존재하지 않으면 로딩중
-    const { data, error, mutate } = useSWR<IUser>('http://localhost:3095/api/users', fetcher);
+    const { data, error, mutate } = useSWR<IUser>('/api/users', fetcher);
 
     const [email, onChangeEmail] = useInput('');
     const [password, onChangePassword] = useInput('');
@@ -20,7 +20,7 @@ const LogIn = () => {
         setLogInError(false);
         axios
             .post(
-                'http://localhost:3095/api/users/login',
+                '/api/users/login',
                 { email, password },
                 {
                     withCredentials: true,

@@ -8,7 +8,7 @@ import { IUser } from "@typings/db";
 import { Success, Form, Error, Label, Input, LinkContainer, Button, Header } from './styles';
 
 const SignUp = () => {
-    const { data, error, mutate } = useSWR<IUser>('http://localhost:3095/api/users', fetcher);
+    const { data, error, mutate } = useSWR<IUser>('/api/users', fetcher);
 
     const [email, onChangeEmail] = useInput('');
     const [nickname, onChangeNickname] = useInput('');
@@ -36,14 +36,14 @@ const SignUp = () => {
         if (!mismatchError && nickname) {
             setSignUpError('') // 비동기 요청전에 초기화 한번 해주기
             setSignUpSuccess(false);
-            axios.post('http://localhost:3095/api/users', {
+            axios.post('/api/users', {
                 email,
                 nickname,
                 password,
             })
                 .then((response) => {
-                    console.log(response);
                     setSignUpSuccess(true);
+                    mutate(response.data, false);
                 })
                 .catch((err) => {
                     console.log(err.response);
@@ -57,7 +57,7 @@ const SignUp = () => {
     }
 
     if (data) {
-        return <Navigate replace to="/workspace/sleact/channel/일반" />
+        return <Navigate replace to="/login" />
     }
 
     return (
