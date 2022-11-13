@@ -10,12 +10,16 @@ interface Props {
     isEmpty: boolean;
     isReachingEnd: boolean;
 }
-const ChatList = forwardRef<Scrollbars, Props>(({ chatSections, setSize, isEmpty, isReachingEnd }, ref) => {
+const ChatList = forwardRef<Scrollbars, Props>(({ chatSections, setSize, isEmpty, isReachingEnd }, ref: any) => {
     const onScroll = useCallback((values: any) => {
         if (values.scrollTop === 0 && isReachingEnd) {
             console.log("가장 위");
             setSize((prevSize) => prevSize + 1)
-                .then(() => { })
+                .then(() => {
+                    if (ref?.current) {
+                        ref.current?.scrollTop(ref.current?.getScrollHeight() - values.scrollHeight);
+                    }
+                })
         }
     }, []);
 

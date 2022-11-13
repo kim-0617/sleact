@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import gravatar from 'gravatar'
 import { Container, Header } from "./styles";
 import { IChannel, IChat, IDM, IUser } from '@typings/db';
@@ -11,6 +11,7 @@ import axios from "axios";
 import makeSection from "@utils/makeSection";
 import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite'
+import Scrollbars from 'react-custom-scrollbars';
 
 const DirectMessage = () => {
     const { workspace, id } = useParams<{ workspace: string, id: string }>();
@@ -27,7 +28,7 @@ const DirectMessage = () => {
     const isReachingEnd = isEmpty || (chatData && chatData[chatData.length - 1]?.length < 20) || false;
 
     const [chat, onChangeChat, setChat] = useInput('');
-    const scrollbarRef = useRef(null);
+    const scrollbarRef = useRef<Scrollbars>(null);
     const onSubmitForm = useCallback((e: any) => {
         e.preventDefault();
         axios
@@ -36,11 +37,20 @@ const DirectMessage = () => {
             })
             .then((response) => {
                 setChat('');
+                mutateChat(response.data);
+                scrollbarRef.current?.scrollToBottom();
             })
             .catch((err) => {
                 console.dir(err)
             });
     }, [chat]);
+
+    //로딩시 스크롤바 제일 아래로
+    useEffect(() => {
+        if (chatData?.length === 1) {
+            scrollbarRef.current?.scrollToBottom();
+        }
+    }, [chatData]);
 
     if (!userData || !myData || !Array.isArray(chatData)) {
         return null;
