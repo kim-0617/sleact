@@ -1,34 +1,34 @@
 import Chat from '@components/Chat';
 import { ChatZone, Section, StickyHeader } from '@components/ChatList/styles';
-import { IDM, IChat } from '@typings/db';
-import React, { useCallback, forwardRef, RefObject, MutableRefObject } from 'react';
-import { Scrollbars } from 'react-custom-scrollbars';
+import { IChat, IDM } from '@typings/db';
+import React, { FC, RefObject, useCallback } from 'react';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 interface Props {
+    scrollbarRef: any;
+    isReachingEnd?: boolean;
+    isEmpty: boolean;
     chatSections: { [key: string]: (IDM | IChat)[] };
     setSize: (f: (size: number) => number) => Promise<(IDM | IChat)[][] | undefined>;
-    isEmpty: boolean;
-    isReachingEnd: boolean;
 }
-const ChatList = forwardRef<Scrollbars, Props>(({ chatSections, setSize, isEmpty, isReachingEnd }, ref: any) => {
-    const onScroll = useCallback((values: any) => {
-        if (values.scrollTop === 0 && isReachingEnd) {
-            console.log("가장 위");
-            setSize((prevSize) => prevSize + 1)
-                .then(() => {
-                    if (ref?.current) {
-                        ref.current?.scrollTop(ref.current?.getScrollHeight() - values.scrollHeight);
-                    }
-                })
-        }
-    }, []);
+const ChatList: FC<Props> = ({ scrollbarRef, isReachingEnd, isEmpty, chatSections, setSize }) => {
+    const onScroll = useCallback(
+        (values: any) => {
+            if (values.scrollTop === 0 && !isReachingEnd && !isEmpty) {
+                setSize((size) => size + 1).then(() => {
+                    scrollbarRef.current?.scrollTop(scrollbarRef.current?.getScrollHeight() - values.scrollHeight);
+                });
+            }
+        },
+        [setSize, scrollbarRef, isReachingEnd, isEmpty],
+    );
 
     return (
         <ChatZone>
-            <Scrollbars autoHide onScrollFrame={onScroll}>
+            <Scrollbars autoHide ref={scrollbarRef} onScrollFrame={onScroll}>
                 {Object.entries(chatSections).map(([date, chats]) => {
                     return (
-                        <Section className={`section-${date}`} key={date}>
+                        <Section className={`section-${date}`} key={date + Math.random()}>
                             <StickyHeader>
                                 <button>{date}</button>
                             </StickyHeader>
@@ -41,6 +41,6 @@ const ChatList = forwardRef<Scrollbars, Props>(({ chatSections, setSize, isEmpty
             </Scrollbars>
         </ChatZone>
     );
-});
+};
 
 export default ChatList;
