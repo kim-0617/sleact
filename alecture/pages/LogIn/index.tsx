@@ -21,10 +21,7 @@ const LogIn = () => {
         axios
             .post(
                 '/api/users/login',
-                { email, password },
-                {
-                    withCredentials: true,
-                },
+                { email, password }
             )
             .then((response) => {
                 // mutate : 서버에 요청을 보내지 않고 response.data를 가져옴
