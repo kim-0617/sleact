@@ -31,7 +31,7 @@ import CreateChannelModal from "@components/CreateChannelModal";
 import InviteWorkspaceModal from "@components/InviteWorkspaceModal";
 import InviteChannelModal from '@components/InviteChannelModal';
 import ChannelList from "@components/ChannelList";
-import DMList from "@components/DmList";
+import DMList from "@components/DMList";
 
 const Channel = loadable(() => import('@pages/Channel'));
 const DirectMessage = loadable(() => import('@pages/DirectMessage'));
