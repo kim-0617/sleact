@@ -12,13 +12,16 @@ import makeSection from "@utils/makeSection";
 import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite'
 import Scrollbars from 'react-custom-scrollbars';
+import useSocket from "@hooks/useSocket";
 
 const DirectMessage = () => {
     const { workspace, id } = useParams<{ workspace: string, id: string }>();
     const { data: userData, mutate: userMutate } = useSWR<IUser | false>(`/api/workspaces/${workspace}/users/${id}`, fetcher, { dedupingInterval: 2000 });
-    const { data: myData, mutate: myMutate } = useSWR<IUser | false>(`/api/users`, fetcher, {
+    const { data: myData, mutate: myMutate } = useSWR<any>(`/api/users`, fetcher, {
         dedupingInterval: 2000
     });
+
+    const [socket] = useSocket(workspace)
 
     const { data: chatData, mutate: mutateChat, setSize } = useSWRInfinite<IDM[]>(
         (index) => `/api/workspaces/${workspace}/dms/${id}/chats?perPage=20&page=${index + 1}`,
@@ -79,6 +82,28 @@ const DirectMessage = () => {
         [chat, workspace, id, myData, userData, chatData, mutateChat, setChat],
     );
 
+    const onMessage = useCallback((data: IDM) => {
+        // id는 상대방 아이디
+        if (data.SenderId === Number(id) && myData.id !== Number(id)) {
+            mutateChat((chatData) => {
+                chatData?.[0].unshift(data);
+                return chatData;
+            }, false).then(() => {
+                if (scrollbarRef.current) {
+                    if (
+                        scrollbarRef.current.getScrollHeight() <
+                        scrollbarRef.current.getClientHeight() + scrollbarRef.current.getScrollTop() + 150
+                    ) {
+                        console.log('scrollToBottom!', scrollbarRef.current?.getValues());
+                        setTimeout(() => {
+                            scrollbarRef.current?.scrollToBottom();
+                        }, 50);
+                    }
+                }
+            });
+        }
+    }, []);
+
     // 로딩 시 스크롤바 제일 아래로
     useEffect(() => {
         if (chatData?.length === 1) {
@@ -87,6 +112,15 @@ const DirectMessage = () => {
             }, 100);
         }
     }, [chatData]);
+
+    useEffect(() => {
+        socket?.on('dm', onMessage);
+
+        return () => {
+            socket?.off('dm', onMessage);
+        }
+    }, [socket, onMessage]);
+
 
     if (!userData || !myData || !Array.isArray(chatData)) {
         return null;
