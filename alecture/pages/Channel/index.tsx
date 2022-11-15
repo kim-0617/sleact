@@ -64,7 +64,6 @@ const Channel = () => {
                         content: chat,
                     })
                     .then((response) => {
-                        mutateChat(response.data, false)
                     })
                     .catch(console.error);
             }
@@ -127,7 +126,7 @@ const Channel = () => {
         return null;
     }
 
-    const chatSections = makeSection(chatData ? ([] as IDM[]).concat(...chatData).reverse() : []);
+    const chatSections = makeSection((chatData && Array.isArray(chatData)) ? chatData.flat().reverse() : []);
 
     return (
         <Container>
@@ -153,7 +152,6 @@ const Channel = () => {
                 onCloseModal={onCloseModal}
                 setShowInviteChannelModal={setShowInviteChannelModal}
             />
-            {dragOver && <DragOver>업로드!</DragOver>}
         </Container>
     );
 };
