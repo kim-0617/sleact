@@ -122,6 +122,54 @@ const Channel = () => {
         setShowInviteChannelModal(false);
     }, []);
 
+    // const onChangeFile = useCallback((e: any) => {
+    //     const formData = new FormData();
+    //     if (e.target.files) {
+    //         // Use DataTransferItemList interface to access the file(s)
+    //         for (let i = 0; i < e.target.files.length; i++) {
+    //             const file = e.target.files[i].getAsFile();
+    //             console.log('... file[' + i + '].name = ' + file.name);
+    //             formData.append('image', file);
+    //         }
+    //     }
+    //     axios.post(`/api/workspaces/${workspace}/channels/${channel}/images`, formData).then(() => { });
+    // }, []);
+
+    const onDrop = useCallback(
+        (e: any) => {
+            e.preventDefault();
+            console.log(e);
+            const formData = new FormData();
+            if (e.dataTransfer.items) {
+                // Use DataTransferItemList interface to access the file(s)
+                for (let i = 0; i < e.dataTransfer.items.length; i++) {
+                    // If dropped items aren't files, reject them
+                    if (e.dataTransfer.items[i].kind === 'file') {
+                        const file = e.dataTransfer.items[i].getAsFile();
+                        console.log(e, '.... file[' + i + '].name = ' + file.name);
+                        formData.append('image', file);
+                    }
+                }
+            } else {
+                // Use DataTransfer interface to access the file(s)
+                for (let i = 0; i < e.dataTransfer.files.length; i++) {
+                    console.log(e, '... file[' + i + '].name = ' + e.dataTransfer.files[i].name);
+                    formData.append('image', e.dataTransfer.files[i]);
+                }
+            }
+            axios.post(`/api/workspaces/${workspace}/channels/${channel}/images`, formData).then(() => {
+                setDragOver(false);
+            });
+        },
+        [workspace, channel],
+    );
+
+    const onDragOver = useCallback((e: any) => {
+        e.preventDefault();
+        console.log(e);
+        setDragOver(true);
+    }, []);
+
     if (!myData && !Array.isArray(chatData)) {
         return null;
     }
@@ -129,7 +177,7 @@ const Channel = () => {
     const chatSections = makeSection((chatData && Array.isArray(chatData)) ? chatData.flat().reverse() : []);
 
     return (
-        <Container>
+        <Container onDrop={onDrop} onDragOver={onDragOver}>
             <Header>
                 <span>#{channel}</span>
                 <div className="header-right">
@@ -152,6 +200,7 @@ const Channel = () => {
                 onCloseModal={onCloseModal}
                 setShowInviteChannelModal={setShowInviteChannelModal}
             />
+            {dragOver && <DragOver>업로드!</DragOver>}
         </Container>
     );
 };
