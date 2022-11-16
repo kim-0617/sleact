@@ -170,7 +170,7 @@ const WorkSpace = (props: ChildProp) => {
                 <Workspaces>
                     {userData.Workspaces && userData?.Workspaces.map((ws: any) => {
                         return (
-                            <Link key={ws.id} to={`/workspace/${ws.url}/channel`}>
+                            <Link key={ws.id} to={`/workspace/${ws.url}/channel/일반`}>
                                 <WorkspaceButton>{ws.name.slice(0, 1).toUpperCase()}</WorkspaceButton>
                             </Link>
                         );
